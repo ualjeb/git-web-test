@@ -1,0 +1,1 @@
+# It looks like Swashbuckle.AspNetCore with Version=6.6.2 package will work on this project, no other version will work, higher version require some strict action rules so version=8.1.0 is not going to work, which is used in this project, Version=6.6.2 also used in this project which worked. 
