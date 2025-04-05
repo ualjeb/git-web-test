@@ -1,9 +1,11 @@
-//for program.cs
+//added authorization middleware, logging middleware, but some reason it is not working in swagger,
+//which shows some version problem for openAPI and swagger.
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -25,18 +27,56 @@ builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen();       //for testing purpose commentout below AddSwaggerGen otherwise for authorization token use below AddSwaggerGen and comment this line
+// builder.Services.AddSwaggerGen(options =>
+// {
+//     options.SwaggerDoc("v1", new OpenApiInfo
+//     {
+//         Title = "My API",
+//         Version = "3.0.4",
+//         Description = "An example ASP.NET Core Minimal API"
+//     });
+//     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+//     {
+//         In = ParameterLocation.Header,
+//         Description = "Enter 'Bearer' followed by your token",
+//         Name = "Authorization",
+//         Type = SecuritySchemeType.Http,
+//         Scheme = "Bearer"
+//     });
+
+//     options.AddSecurityRequirement(new OpenApiSecurityRequirement
+//     {
+//         {
+//             new OpenApiSecurityScheme
+//             {
+//                 Reference = new OpenApiReference
+//                 {
+//                     Type = ReferenceType.SecurityScheme,
+//                     Id = "Bearer"
+//                 }
+//             },
+//             new List<string>()
+//         }
+//     });
+// });
 
 var app = builder.Build();
 
 // Use custom exception handling middleware
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+// app.UseMiddleware<AuthenticationMiddleware>();  // for testing purpose comment this line otherwise for authorization token do not comment this line
+app.UseMiddleware<LoggingMiddleware>();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+
+app.UseSwagger();
+app.UseSwaggerUI(); //for testing purpose commentout below UseSwaggerUI otherwise for authorization token use below UseSwaggerUI and comment this line
+// app.UseSwaggerUI(c =>
+// {
+//     c.SwaggerEndpoint("https://fluffy-invention-667v95q47gjf59gw.github.dev/swagger/v1/swagger.json", "My API v1");
+//     c.RoutePrefix = "swagger"; 
+// });
+
 
 // In-memory list to store users
 var users = new List<User>();
@@ -93,6 +133,8 @@ app.MapPut("/users/{id}", (int id, UpdateUser updatedUser) =>
         // Validate input fields
         if (string.IsNullOrWhiteSpace(updatedUser.Name) || !User.IsValidEmail(updatedUser.Email))
             return Results.BadRequest("Invalid user data. Ensure Name is not empty and Email is in correct format.");
+        if (user.Name == updatedUser.Name && user.Email == updatedUser.Email)
+            return Results.BadRequest("No changes detected. Please modify user data before updating.");
 
         user.Name = updatedUser.Name;
         user.Email = updatedUser.Email;
@@ -116,6 +158,25 @@ app.MapDelete("/users/{id}", (int id) =>
 });
 
 app.Run();
+
+// Logging Middleware
+public class LoggingMiddleware
+{
+    private readonly RequestDelegate _next;
+    private readonly ILogger<LoggingMiddleware> _logger;
+
+    public LoggingMiddleware(RequestDelegate next, ILogger<LoggingMiddleware> logger)
+    {
+        _next = next;
+        _logger = logger;
+    }
+    public async Task Invoke(HttpContext context)
+    {
+        _logger.LogInformation($"Request: {context.Request.Method} {context.Request.Path}");
+        await _next(context);
+        _logger.LogInformation($"Response: {context.Response.StatusCode}");
+    }
+}
 
 // Exception Handling Middleware
 public class ExceptionHandlingMiddleware
@@ -142,6 +203,38 @@ public class ExceptionHandlingMiddleware
         }
     }
 }
+
+// Authentication Middleware  //for testing purpose comment this middleware otherwise for authorization token do not comment this middleware
+// public class AuthenticationMiddleware
+// {
+//     private readonly RequestDelegate _next;
+//     private readonly ILogger<AuthenticationMiddleware> _logger;
+
+//     public AuthenticationMiddleware(RequestDelegate next, ILogger<AuthenticationMiddleware> logger)
+//     {
+//         _next = next;
+//         _logger = logger;
+//     }
+//     public async Task Invoke(HttpContext context)
+//     {
+//         // Allow Swagger without requiring authentication
+//         if (context.Request.Path.StartsWithSegments("/swagger") || context.Request.Path.StartsWithSegments("/swagger/index.html"))
+//         {
+//             await _next(context);
+//             return;
+//         }
+
+//         if (!context.Request.Headers.TryGetValue("Authorization", out var token) || string.IsNullOrWhiteSpace(token))
+//         {
+//             _logger.LogWarning("Unauthorized request.");
+//             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+//             await context.Response.WriteAsJsonAsync(new { error = "Unauthorized access. Please provide a valid token." });
+//             return;
+//         }
+
+//         await _next(context);
+//     }
+// }
 
 // Define User Model
 public class User

@@ -6,10 +6,16 @@
 /workspaces/git-web-test/UserManagementAPI/bin/Debug/net8.0/UserManagementAPI.dll
 /workspaces/git-web-test/UserManagementAPI/bin/Debug/net8.0/UserManagementAPI.pdb
 /workspaces/git-web-test/UserManagementAPI/bin/Debug/net8.0/Microsoft.AspNetCore.OpenApi.dll
+/workspaces/git-web-test/UserManagementAPI/bin/Debug/net8.0/Microsoft.Bcl.Memory.dll
+/workspaces/git-web-test/UserManagementAPI/bin/Debug/net8.0/Microsoft.IdentityModel.Abstractions.dll
+/workspaces/git-web-test/UserManagementAPI/bin/Debug/net8.0/Microsoft.IdentityModel.JsonWebTokens.dll
+/workspaces/git-web-test/UserManagementAPI/bin/Debug/net8.0/Microsoft.IdentityModel.Logging.dll
+/workspaces/git-web-test/UserManagementAPI/bin/Debug/net8.0/Microsoft.IdentityModel.Tokens.dll
 /workspaces/git-web-test/UserManagementAPI/bin/Debug/net8.0/Microsoft.OpenApi.dll
 /workspaces/git-web-test/UserManagementAPI/bin/Debug/net8.0/Swashbuckle.AspNetCore.Swagger.dll
 /workspaces/git-web-test/UserManagementAPI/bin/Debug/net8.0/Swashbuckle.AspNetCore.SwaggerGen.dll
 /workspaces/git-web-test/UserManagementAPI/bin/Debug/net8.0/Swashbuckle.AspNetCore.SwaggerUI.dll
+/workspaces/git-web-test/UserManagementAPI/bin/Debug/net8.0/System.IdentityModel.Tokens.Jwt.dll
 /workspaces/git-web-test/UserManagementAPI/obj/Debug/net8.0/UserManagementAPI.csproj.AssemblyReference.cache
 /workspaces/git-web-test/UserManagementAPI/obj/Debug/net8.0/UserManagementAPI.GeneratedMSBuildEditorConfig.editorconfig
 /workspaces/git-web-test/UserManagementAPI/obj/Debug/net8.0/UserManagementAPI.AssemblyInfoInputs.cache
